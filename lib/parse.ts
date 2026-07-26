@@ -247,6 +247,43 @@ export function extractRevision(obj: any): Revision | null {
   };
 }
 
+export type RecommendationCheck = {
+  stated: string;
+  followsFrom: string | null;
+  consistent: boolean | null;
+  note: string | null;
+};
+
+/**
+ * Whether the report's OWN stated recommendation survives the review.
+ *
+ * This is still a consistency check, not advice: it reports that a
+ * recommendation is downstream of a conclusion the document's own findings
+ * contradict. Crucible never proposes a course of action of its own.
+ */
+export function extractRecommendationCheck(obj: any): RecommendationCheck | null {
+  const r =
+    obj?.recommendation_check ?? obj?.recommendationCheck ?? obj?.recommendation;
+  if (!r || typeof r !== "object") return null;
+
+  const stated = typeof r.stated === "string" ? r.stated.trim() : "";
+  if (!stated) return null;
+
+  const consistent = r.consistent ?? r.supported ?? r.holds;
+
+  return {
+    stated,
+    followsFrom:
+      typeof r.follows_from === "string"
+        ? r.follows_from
+        : typeof r.followsFrom === "string"
+        ? r.followsFrom
+        : null,
+    consistent: typeof consistent === "boolean" ? consistent : null,
+    note: typeof r.note === "string" ? r.note : null,
+  };
+}
+
 export type Dimension = { label: string; value: number };
 
 /**

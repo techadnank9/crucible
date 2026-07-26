@@ -43,7 +43,13 @@ output_pydantic so the shape is enforced rather than requested.
       "survived": false
     }
   ],
-  "revision": { "changed": 4, "kept": 6, "note": "<what the rewrite changed>" }
+  "revision": { "changed": 4, "kept": 6, "note": "<what the rewrite changed>" },
+  "recommendation_check": {
+    "stated": "<the recommendation the REPORT itself makes, quoted>",
+    "follows_from": "<the report's own conclusion that recommendation rests on>",
+    "consistent": false,
+    "note": "<whether that recommendation still stands given the findings>"
+  }
 }
 
 FIELD RULES:
@@ -58,6 +64,13 @@ FIELD RULES:
   the claim withstood the challenge; false means it forced a rewrite. Include
   every Defender, Attacker and Skeptic objection, not just sustained ones.
 - revision: counts of claims changed versus left standing after the ruling.
+- recommendation_check: quote the recommendation the REPORT makes and name the
+  conclusion it rests on. Set consistent=false when that conclusion is one the
+  report's own findings contradict — the recommendation then inherits the
+  discrepancy. Report this as a finding about the document. NEVER propose a
+  course of action, a treatment, or a next step of your own. The output states
+  whether what is already written down still stands; a clinician decides what
+  follows.
 
 CONSTRAINTS:
 - The Reforger's output must reach this task via context so the answer is
@@ -78,6 +91,7 @@ CONSTRAINTS:
 | `score.dimensions` | "What the score is made of" bars appear |
 | `challenges` | "What the panel attacked" cards appear |
 | `revision` | "What the rewrite changed" bar appears |
+| `recommendation_check` | "The report's own recommendation" panel appears |
 
 Everything degrades safely. Emit only `answer` and the demo works. Emit none of
 it and today's behaviour is unchanged.
@@ -98,6 +112,8 @@ schema exactly:
 | `challenges[].from` | `agent`, `role` |
 | `challenges[].survived` | `upheld`, `sustained` |
 | `revision` | `rewrite`, `delta` |
+| `recommendation_check` | `recommendationCheck`, `recommendation` |
+| `recommendation_check.consistent` | `supported`, `holds` |
 
 `answer` is the only field with no fallback worth relying on.
 

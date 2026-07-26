@@ -373,6 +373,61 @@ body {
   opacity: 0.75;
 }
 
+.rec {
+  border: 1.5px solid var(--rule);
+  border-left: 3px solid var(--ink-soft);
+  padding: 14px 16px;
+}
+
+.rec.is-broken {
+  border-left-color: var(--ember);
+}
+
+.rec-stated {
+  margin: 0;
+  font-size: 15.5px;
+  line-height: 1.5;
+  font-style: italic;
+  color: var(--ink);
+}
+
+.rec-from,
+.rec-flag {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin: 9px 0 0;
+}
+
+.rec-flag {
+  font-weight: 700;
+}
+
+.rec.is-broken .rec-flag {
+  color: #b8431a;
+}
+
+.rec-note {
+  margin: 10px 0 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+  padding-left: 10px;
+  border-left: 2px solid var(--rule);
+}
+
+.rec-handoff {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  opacity: 0.8;
+  margin: 10px 0 0;
+}
+
 .challenges {
   list-style: none;
   margin: 0;

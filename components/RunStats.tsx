@@ -3,6 +3,7 @@
 import type {
   Challenge,
   Dimension,
+  RecommendationCheck,
   Revision,
   RunUsage,
 } from "@/lib/parse";
@@ -16,6 +17,8 @@ type Props = {
   challenges: Challenge[];
   /** Null until the crew reports what the rewrite changed. */
   revision: Revision | null;
+  /** The report's own recommendation, checked against its findings. */
+  recommendation: RecommendationCheck | null;
   usage: RunUsage | null;
   elapsedMs: number;
 };
@@ -51,6 +54,7 @@ export default function RunStats({
   dimensions,
   challenges,
   revision,
+  recommendation,
   usage,
   elapsedMs,
 }: Props) {
@@ -60,7 +64,13 @@ export default function RunStats({
   const overturned = challenges.filter((c) => c.survived === false).length;
 
   // Nothing measured about the answer means nothing worth showing.
-  if (pct === null && dimensions.length === 0 && challenges.length === 0 && !revision) {
+  if (
+    pct === null &&
+    dimensions.length === 0 &&
+    challenges.length === 0 &&
+    !revision &&
+    !recommendation
+  ) {
     return null;
   }
 
@@ -112,6 +122,48 @@ export default function RunStats({
               </span>
             ))}
           </div>
+        </figure>
+      )}
+
+      {/* ── The report's own recommendation ───────────────────────────── */}
+      {recommendation && (
+        <figure className="chart">
+          <figcaption>
+            The report&rsquo;s own recommendation
+            <span className="chart-sub">
+              Checked against the findings stated in the same document. Crucible
+              does not propose a course of action &mdash; it reports whether the
+              one already written down still stands.
+            </span>
+          </figcaption>
+
+          <div
+            className={`rec ${
+              recommendation.consistent === false ? "is-broken" : ""
+            }`}
+          >
+            <p className="rec-stated">&ldquo;{recommendation.stated}&rdquo;</p>
+
+            {recommendation.followsFrom && (
+              <p className="rec-from">
+                Follows from: <strong>{recommendation.followsFrom}</strong>
+              </p>
+            )}
+
+            {recommendation.consistent !== null && (
+              <p className="rec-flag">
+                {recommendation.consistent
+                  ? "◆ Consistent with the stated findings"
+                  : "▲ Inherits a conclusion the findings contradict"}
+              </p>
+            )}
+
+            {recommendation.note && <p className="rec-note">{recommendation.note}</p>}
+          </div>
+
+          <p className="rec-handoff">
+            A clinician decides what follows from this.
+          </p>
         </figure>
       )}
 

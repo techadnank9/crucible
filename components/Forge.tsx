@@ -10,6 +10,7 @@ import {
   extractScoreCard,
   extractChallenges,
   extractDimensions,
+  extractRecommendationCheck,
   extractRevision,
   extractStructured,
   extractUsage,
@@ -20,6 +21,7 @@ import {
   stripScoreCard,
   type Challenge,
   type Dimension,
+  type RecommendationCheck,
   type Revision,
   type RunUsage,
   type ScoreCard as Card,
@@ -87,6 +89,7 @@ export default function Forge() {
   const [dimensions, setDimensions] = useState<Dimension[]>([]);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [revision, setRevision] = useState<Revision | null>(null);
+  const [recommendation, setRecommendation] = useState<RecommendationCheck | null>(null);
   const [finalMs, setFinalMs] = useState(0);
 
   // Bumped on every new run so an in-flight poll loop from an abandoned run
@@ -131,6 +134,7 @@ export default function Forge() {
     setDimensions([]);
     setChallenges([]);
     setRevision(null);
+    setRecommendation(null);
     setFinalMs(0);
     setStatus("running");
     setAnswer(null);
@@ -273,6 +277,7 @@ export default function Forge() {
           setDimensions(extractDimensions(packaged.source?.score ?? packaged.source));
           setChallenges(extractChallenges(packaged.source));
           setRevision(extractRevision(packaged.source));
+          setRecommendation(extractRecommendationCheck(packaged.source));
           setFinalMs(startedMs);
           setActiveStep(steps.length - 1);
           setStatus("done");
@@ -333,6 +338,7 @@ export default function Forge() {
     setDimensions([]);
     setChallenges([]);
     setRevision(null);
+    setRecommendation(null);
     setFinalMs(0);
   }
 
@@ -486,6 +492,7 @@ export default function Forge() {
               dimensions={dimensions}
               challenges={challenges}
               revision={revision}
+              recommendation={recommendation}
               usage={usage}
               elapsedMs={finalMs}
             />
