@@ -53,10 +53,37 @@ export async function POST(req: Request) {
   const text = await upstream.text();
 
   if (!upstream.ok) {
+    const detail = summariseUpstream(text, upstream.status);
+
+    // 429 from the kickoff endpoint means the deployment's execution quota is
+    // spent, not that the request should be retried. Say so plainly.
+    if (upstream.status === 429) {
+      return NextResponse.json(
+        {
+          error: /limit|quota/i.test(detail)
+            ? "The crew has spent its execution quota for this billing period. No runs can start until the plan resets or is upgraded."
+            : "The crew is rate limited right now. Wait a moment and try again.",
+          detail,
+        },
+        { status: 429 }
+      );
+    }
+
+    if (upstream.status === 401 || upstream.status === 403) {
+      return NextResponse.json(
+        {
+          error:
+            "The crew refused the token. Check CREW_TOKEN in the environment.",
+          detail,
+        },
+        { status: 502 }
+      );
+    }
+
     return NextResponse.json(
       {
         error: `The crew rejected the kickoff (HTTP ${upstream.status}).`,
-        detail: summariseUpstream(text, upstream.status),
+        detail,
       },
       { status: 502 }
     );
