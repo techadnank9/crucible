@@ -32,3 +32,31 @@ export function crewHeaders(token: string): HeadersInit {
     "Content-Type": "application/json",
   };
 }
+
+/**
+ * 5xx and 429 from the crew gateway are almost always transient — it hiccups
+ * under load while a run is executing. The client should keep polling through
+ * these rather than killing the run on a single bad response.
+ */
+export function isRetryableStatus(status: number): boolean {
+  return status >= 500 || status === 429 || status === 408;
+}
+
+/**
+ * The gateway returns an HTML error page on 502. Dumping that into the UI is
+ * useless noise, so collapse any HTML body to a short readable line.
+ */
+export function summariseUpstream(text: string, status: number): string {
+  const body = text.trim();
+
+  if (!body) return `Upstream returned HTTP ${status} with an empty body.`;
+
+  if (body.startsWith("<") || /<html[\s>]/i.test(body)) {
+    const title = body.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim();
+    return title
+      ? `Upstream gateway responded: ${title}`
+      : `Upstream gateway returned an HTML error page (HTTP ${status}).`;
+  }
+
+  return body.slice(0, 300);
+}

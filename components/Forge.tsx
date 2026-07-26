@@ -14,7 +14,13 @@ import {
   stripScoreCard,
   type ScoreCard as Card,
 } from "@/lib/parse";
-import { POLL_MS, STEPS, STEP_MS, TIMEOUT_MS } from "@/lib/steps";
+import {
+  MAX_CONSECUTIVE_FAILURES,
+  POLL_MS,
+  STEPS,
+  STEP_MS,
+  TIMEOUT_MS,
+} from "@/lib/steps";
 
 const EXAMPLES = [
   "Should a seed-stage startup hire a designer or a second engineer first?",
@@ -108,6 +114,11 @@ export default function Forge() {
 
     const deadline = Date.now() + TIMEOUT_MS;
 
+    // The crew gateway intermittently 502s while a run is executing. Those
+    // polls are noise, not a dead run, so ride them out and only give up
+    // after the run has been unreachable for a sustained stretch.
+    let consecutiveFailures = 0;
+
     while (Date.now() < deadline) {
       await sleep(POLL_MS);
       if (stale()) return;
@@ -124,17 +135,41 @@ export default function Forge() {
         if (stale()) return;
 
         if (!res.ok) {
+          // Hard rejection (bad id, auth, unparseable): stop now.
+          if (!payload?.retryable) {
+            setError({
+              message: payload?.error ?? "Lost contact with the run mid-forge.",
+              detail: payload?.detail,
+            });
+            setStatus("error");
+            return;
+          }
+
+          if (++consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
+            setError({
+              message:
+                "The crew gateway stopped responding for half a minute straight. The run may still be finishing upstream — try again shortly.",
+              detail: payload?.detail,
+            });
+            setStatus("error");
+            return;
+          }
+          continue;
+        }
+      } catch {
+        // Client-side network blip. Same tolerance.
+        if (++consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
           setError({
-            message: payload?.error ?? "Lost contact with the run mid-forge.",
-            detail: payload?.detail,
+            message:
+              "The connection kept dropping while waiting on the run. Check the network and try again.",
           });
           setStatus("error");
           return;
         }
-      } catch {
-        // Single transient network blip: keep polling until the deadline.
         continue;
       }
+
+      consecutiveFailures = 0;
 
       if (isFailed(payload)) {
         setError({ message: failureReason(payload) });

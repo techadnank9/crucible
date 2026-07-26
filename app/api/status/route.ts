@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { crewHeaders, getCrewConfig } from "@/lib/crew";
+import {
+  crewHeaders,
+  getCrewConfig,
+  isRetryableStatus,
+  summariseUpstream,
+} from "@/lib/crew";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -26,30 +31,44 @@ export async function GET(req: Request) {
       cache: "no-store",
     });
   } catch {
+    // Network-level failure. The run itself is probably still alive upstream,
+    // so let the client decide whether to keep waiting.
     return NextResponse.json(
-      { error: "The crew endpoint is unreachable. Try again in a moment." },
-      { status: 502 }
+      {
+        error: "The crew endpoint is unreachable.",
+        retryable: true,
+      },
+      { status: 503 }
     );
   }
 
   const text = await upstream.text();
 
   if (!upstream.ok) {
+    const retryable = isRetryableStatus(upstream.status);
     return NextResponse.json(
       {
-        error: `Status check failed (HTTP ${upstream.status}).`,
-        detail: text.slice(0, 500),
+        error: retryable
+          ? `The crew gateway is briefly unavailable (HTTP ${upstream.status}).`
+          : `Status check failed (HTTP ${upstream.status}).`,
+        detail: summariseUpstream(text, upstream.status),
+        retryable,
       },
-      { status: 502 }
+      { status: retryable ? 503 : 502 }
     );
   }
 
   try {
     return NextResponse.json(JSON.parse(text));
   } catch {
+    // A 200 carrying HTML means the gateway answered instead of the crew.
     return NextResponse.json(
-      { error: "The crew returned a status payload that could not be parsed." },
-      { status: 502 }
+      {
+        error: "The crew returned a status payload that could not be parsed.",
+        detail: summariseUpstream(text, 200),
+        retryable: true,
+      },
+      { status: 503 }
     );
   }
 }

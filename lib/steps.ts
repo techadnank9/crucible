@@ -16,3 +16,9 @@ export const POLL_MS = 2500;
 
 /** Hard stop for a single run. */
 export const TIMEOUT_MS = 3 * 60 * 1000;
+
+/**
+ * Consecutive failed polls tolerated before a run is declared lost.
+ * At POLL_MS = 2500 this rides out ~30s of gateway flapping.
+ */
+export const MAX_CONSECUTIVE_FAILURES = 12;

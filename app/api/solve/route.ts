@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { crewHeaders, getCrewConfig } from "@/lib/crew";
+import { crewHeaders, getCrewConfig, summariseUpstream } from "@/lib/crew";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         error: `The crew rejected the kickoff (HTTP ${upstream.status}).`,
-        detail: text.slice(0, 500),
+        detail: summariseUpstream(text, upstream.status),
       },
       { status: 502 }
     );
