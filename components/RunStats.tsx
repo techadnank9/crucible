@@ -72,16 +72,17 @@ export default function RunStats({
       {pct !== null && (
         <figure className="chart">
           <figcaption>
-            How far to trust this
+            Self-assessed confidence
             <span className="chart-sub">
-              The crew&rsquo;s own reliability rating for the answer it just
-              produced, placed on a named scale
+              How well-supported the crew judges its own argument to be. This is
+              the crew rating itself &mdash; it is not a measure of whether the
+              answer is correct.
             </span>
           </figcaption>
 
           <div className="scale-head">
             <span className="scale-score">{Math.round(pct)}</span>
-            <span className="scale-band">{bandFor(pct)} confidence</span>
+            <span className="scale-band">{bandFor(pct)}</span>
           </div>
 
           <div
@@ -97,6 +98,11 @@ export default function RunStats({
               <span className="scale-marker-dot" />
             </div>
           </div>
+
+          <p className="scale-caveat">
+            Self-reported and uncalibrated. A high score means the crew found
+            its own argument well-supported, not that the conclusion is right.
+          </p>
 
           <div className="scale-ticks" aria-hidden="true">
             {BANDS.map((b) => (

@@ -334,6 +334,15 @@ body {
   box-shadow: 0 0 0 2px var(--paper);
 }
 
+.scale-caveat {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  margin: 14px 0 10px;
+  padding-left: 11px;
+  border-left: 2px solid var(--rule);
+}
+
 .scale-ticks {
   position: relative;
   height: 30px;

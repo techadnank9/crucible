@@ -123,6 +123,49 @@ Then stop. Don't add features you didn't show.
 
 ---
 
+## What this is not — refuse these three claims
+
+A judge may hand you a bigger claim. Taking it loses the room, because each one
+is contradicted by your own data.
+
+**1. "It diagnoses."**
+It checks whether a conclusion follows from findings stated in the same
+document. That needs no clinical knowledge and makes no diagnosis. The narrow
+claim is the defensible one.
+
+**2. "It recommends treatment."**
+It does not, and it cannot without real patient data, staging, comorbidities,
+validation against outcomes, and regulatory clearance. A system that outputs
+treatment recommendations is a regulated medical device. That is a different
+product, not a prompt change.
+
+**3. "The trust score tells you how confident to be in the answer."**
+This is the one that will catch you out, because your own runs disprove it:
+
+| Run | Verdict | Self-score |
+|---|---|---|
+| `5f262e2f` | BI-RADS 3 — **wrong** | **88** |
+| `4df25bf3` | BI-RADS 4 — **right** | 85 |
+
+**The wrong answer scored higher.** The score measures how well-supported the
+crew judges its own argument, not whether it is correct. Nothing calibrated it
+against ground truth.
+
+If asked what the score means, say that plainly. "It's the system's own
+assessment of how well it argued — we've seen it rate a wrong answer higher
+than a right one, which is exactly why we show the reasoning underneath it
+rather than just the number" is a *better* answer than a confident one. It
+shows you understand your own system.
+
+### The line that survives cross-examination
+
+> Crucible doesn't diagnose and doesn't recommend treatment. It reads a report
+> and flags when the conclusion doesn't follow from the findings written in the
+> same report — the miss a rushed second reader makes. It surfaces the
+> contradiction to a clinician, who decides.
+
+---
+
 ## Hard lines — do not cross
 
 1. **Never say Crucible diagnoses anything.** It reviews a document for internal

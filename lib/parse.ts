@@ -112,7 +112,16 @@ function coerceScoreCard(obj: any): ScoreCard | null {
   return { score, strongest, weakest };
 }
 
-export type StructuredResult = { answer: string; card: ScoreCard };
+export type StructuredResult = {
+  answer: string;
+  card: ScoreCard;
+  /**
+   * The whole parsed envelope. The card is a narrow {score, strongest,
+   * weakest} view, so richer readers (dimensions, challenges, revision) need
+   * the original object rather than the coerced card.
+   */
+  source: any;
+};
 
 /**
  * Preferred path: the crew emitted JSON with the answer and the score as
@@ -146,7 +155,7 @@ export function extractStructured(payload: any): StructuredResult | null {
       coerceScoreCard(obj) ??
       { score: null, strongest: null, weakest: null };
 
-    return { answer, card };
+    return { answer, card, source: obj };
   }
 
   return null;

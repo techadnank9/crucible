@@ -4,6 +4,8 @@ out
 .env
 .env.local
 .env*.local
+.env*
+*.bak
 .vercel
 *.tsbuildinfo
 next-env.d.ts

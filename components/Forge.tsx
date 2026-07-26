@@ -39,9 +39,7 @@ const EXAMPLES = [
   "Is adjuvant chemotherapy justified for a 1.2cm node-negative ER+ breast tumour?",
   "How reliable is PSA screening as a first-line test in men over 70?",
   "When is short-interval follow-up the wrong call on a probably-benign breast mass?",
-  // Kept deliberately off-domain: the engine is general, and this is the
-  // proven fallback if a clinical run goes flat on stage.
-  "Should I take equity or a higher salary at a Series B company?",
+  "Does DCIS extending to within 1mm of a margin count as a negative margin?",
 ];
 
 type Status = "idle" | "running" | "done" | "error";
@@ -271,9 +269,10 @@ export default function Forge() {
           setCard(packaged.card);
           setStructured(true);
           setUsage(extractUsage(payload));
-          setDimensions(extractDimensions(packaged.card));
-          setChallenges(extractChallenges(packaged.card));
-          setRevision(extractRevision(packaged.card));
+          // Read the richer panels off the full envelope, not the narrow card.
+          setDimensions(extractDimensions(packaged.source?.score ?? packaged.source));
+          setChallenges(extractChallenges(packaged.source));
+          setRevision(extractRevision(packaged.source));
           setFinalMs(startedMs);
           setActiveStep(steps.length - 1);
           setStatus("done");

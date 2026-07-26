@@ -25,19 +25,70 @@ export type ReportFixture = {
 export const REPORT_FIXTURES: readonly ReportFixture[] = [
   {
     id: "birads",
-    label: "Mammogram — BI-RADS category",
+    label: "Mammogram + US — BI-RADS category",
     question: "Is this BI-RADS category correct given the described findings?",
     plantedError:
-      "The report describes an irregular mass with indistinct margins in a patient with a first-degree family history, then assigns Category 3 (probably benign) and a six-month watch. Irregular shape plus indistinct margins is suspicious morphology, which does not sit with a probably-benign category.",
-    report: `MAMMOGRAPHY REPORT (Diagnostic, Bilateral)
-Clinical history: 52-year-old female, palpable lump left breast. Family history of breast cancer (mother, diagnosed age 58).
-Comparison: None available.
+      "The report stacks up suspicious descriptors — irregular shape, indistinct margins, taller-than-wide sonographic orientation, posterior acoustic shadowing, a palpable finding, and a first-degree family history — then assigns Category 3 (probably benign) with a six-month watch. Category 3 also carries a stated ceiling of roughly 2% malignancy, and the report offers no prior comparison to support stability. Every one of those findings is quotable straight from the document.",
+    report: `DIAGNOSTIC MAMMOGRAPHY AND TARGETED ULTRASOUND
+Accession: SYN-4417-B   |   Exam date: 12 March   |   Modality: FFDM + US
+Referring clinician: Family Medicine   |   Reading radiologist: [redacted]
 
-Findings: Breasts are heterogeneously dense (ACR category C). Right breast: no significant abnormality. Left breast, upper outer quadrant: 9mm irregular mass with indistinct margins, corresponding to the palpable finding. No associated suspicious calcifications. No skin thickening or nipple retraction.
+CLINICAL HISTORY
+52-year-old female presenting with a self-detected palpable lump in the left
+breast, first noticed approximately six weeks ago and reported as persistent
+and non-tender. No nipple discharge. No prior breast surgery or biopsy. No
+hormone replacement therapy. Family history: mother diagnosed with breast
+carcinoma at age 58; no known genetic testing in the family.
 
-Impression: Left breast irregular mass with indistinct margins.
-BI-RADS Category: 3 — Probably benign.
-Recommendation: Short-interval follow-up mammogram in 6 months.`,
+COMPARISON
+None available. No prior imaging in this system.
+
+TECHNIQUE
+Bilateral full-field digital mammography performed in standard CC and MLO
+projections. Spot compression magnification views of the left upper outer
+quadrant obtained. Targeted ultrasound of the left breast performed with a
+12-5 MHz linear transducer over the area of palpable concern, marked with a
+radiopaque skin marker.
+
+FINDINGS
+Breast composition: ACR category C — heterogeneously dense, which may obscure
+small masses.
+
+Right breast: No mass, architectural distortion, or suspicious calcification.
+Scattered benign-appearing calcifications noted in the lower inner quadrant,
+stable in morphology and unchanged in distribution.
+
+Left breast: In the upper outer quadrant, corresponding to the palpable
+finding and the skin marker, there is a 9mm mass. On spot compression the
+mass demonstrates an irregular shape with indistinct margins. No associated
+suspicious calcifications are identified. No architectural distortion in the
+surrounding parenchyma. No skin thickening, nipple retraction, or trabecular
+coarsening.
+
+Targeted ultrasound: At the 2 o'clock position, 4cm from the nipple, a
+hypoechoic mass measuring 9 x 8 x 6mm is identified, corresponding to the
+mammographic finding. The mass is taller-than-wide in orientation. Margins
+are indistinct with a suggestion of angularity along the posterior aspect.
+Mild posterior acoustic shadowing is present. No internal vascularity
+demonstrated on colour Doppler.
+
+Axilla: Left axillary survey demonstrates two lymph nodes with preserved
+fatty hila and cortical thickness measuring up to 2mm. No rounded or
+cortically thickened nodes identified.
+
+IMPRESSION
+Left breast irregular mass with indistinct margins in the upper outer
+quadrant, corresponding to the palpable area of concern, with sonographic
+correlate demonstrating taller-than-wide orientation and posterior acoustic
+shadowing. Normal-appearing left axillary lymph nodes.
+
+BI-RADS CATEGORY: 3 — Probably benign.
+
+RECOMMENDATION
+Short-interval follow-up diagnostic mammogram and targeted ultrasound of the
+left breast in 6 months. Patient advised to return sooner if the palpable
+finding enlarges or changes in character. Routine screening of the right
+breast to continue at the standard interval.`,
   },
   {
     id: "pathology",
