@@ -9,7 +9,16 @@ export type ScoreCard = {
 };
 
 const DONE_STATES = new Set(["SUCCESS", "COMPLETED", "COMPLETE", "SUCCEEDED", "DONE"]);
-const FAILED_STATES = new Set(["FAILED", "FAILURE", "ERROR", "CANCELLED", "CANCELED"]);
+const FAILED_STATES = new Set([
+  "FAILED",
+  "FAILURE",
+  "ERROR",
+  "CANCELLED",
+  "CANCELED",
+  // The crew answers an unknown kickoff id with 200 + this state. Without it
+  // the client would poll a dead id for the full three minutes.
+  "NOT FOUND",
+]);
 
 function stateOf(payload: any): string {
   const raw = payload?.state ?? payload?.status ?? "";
@@ -24,6 +33,10 @@ export function extractResult(payload: any): string | null {
   if (typeof result?.raw === "string" && result.raw.trim()) return result.raw;
   if (typeof payload?.raw === "string" && payload.raw.trim()) return payload.raw;
   if (typeof payload?.output === "string" && payload.output.trim()) return payload.output;
+
+  const json = payload?.result_json;
+  if (typeof json === "string" && json.trim()) return json;
+  if (typeof json?.raw === "string" && json.raw.trim()) return json.raw;
 
   // Some deployments nest the final text under the last task output.
   const tasks = payload?.tasks_output ?? result?.tasks_output;
@@ -45,7 +58,11 @@ export function isFailed(payload: any): boolean {
 
 export function failureReason(payload: any): string {
   const detail =
-    payload?.error ?? payload?.last_step?.error ?? payload?.message ?? null;
+    payload?.error ??
+    payload?.status ??
+    payload?.last_step?.error ??
+    payload?.message ??
+    null;
   return typeof detail === "string" && detail.trim()
     ? detail.trim()
     : "The crew ended the run without producing an answer.";
@@ -91,6 +108,28 @@ export function extractScoreCard(text: string): ScoreCard {
     strongest: strongest ? stripMarkdown(strongest) : null,
     weakest: weakest ? stripMarkdown(weakest) : null,
   };
+}
+
+/**
+ * Removes the lines that were lifted into the score card so the answer body
+ * does not repeat them. Some crews return a full answer plus a score block;
+ * others return only the score block, in which case this returns "".
+ */
+export function stripScoreCard(text: string): string {
+  const drop =
+    /^\s*(?:\d+[.)]\s*)?(?:[-*]\s*)?\**\s*(?:trust\s*score|strongest|weakest|strength|weakness)\b[^\n]*$/i;
+
+  return text
+    .split("\n")
+    .filter((line) => !drop.test(line))
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+/** True when the answer is nothing but the score block. */
+export function isScoreOnly(text: string): boolean {
+  return stripScoreCard(text).replace(/[\s\-*_#>]/g, "").length < 40;
 }
 
 function stripMarkdown(line: string): string {

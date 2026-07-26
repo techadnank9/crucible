@@ -10,6 +10,8 @@ import {
   failureReason,
   isDone,
   isFailed,
+  isScoreOnly,
+  stripScoreCard,
   type ScoreCard as Card,
 } from "@/lib/parse";
 import { POLL_MS, STEPS, STEP_MS, TIMEOUT_MS } from "@/lib/steps";
@@ -266,7 +268,22 @@ export default function Forge() {
             {card && (card.score || card.strongest || card.weakest) && (
               <ScoreCard card={card} />
             )}
-            <Answer text={answer} />
+
+            {/* Some crews return a full answer plus a score block; this one
+                returns only the score block. Rendering the stripped body in
+                that case would show an empty card, so say so instead. */}
+            {isScoreOnly(answer) ? (
+              <div className="alert reveal">
+                <p className="alert-key">Verdict only</p>
+                <p>
+                  The crew returned its scoring pass without the rewritten
+                  answer attached. The judgement above is the complete response
+                  for this run.
+                </p>
+              </div>
+            ) : (
+              <Answer text={stripScoreCard(answer)} />
+            )}
           </>
         )}
       </div>
