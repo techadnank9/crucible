@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+:root {
+  --color-paper: #f3ece2;
+  --color-paper-dim: #e9e0d2;
+  --color-ink: #161210;
+  --color-ember: #e2571f;
+  --color-gold: #e8a33d;
+}
+
+@theme inline {
+  --color-paper: var(--color-paper);
+  --color-paper-dim: var(--color-paper-dim);
+  --color-ink: var(--color-ink);
+  --color-ember: var(--color-ember);
+  --color-gold: var(--color-gold);
+  --font-sans: var(--font-space-grotesk);
+  --font-display: var(--font-fraunces);
+  --font-mono: var(--font-jetbrains-mono);
+}
+
+* {
+  border-color: var(--color-ink);
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+::selection {
+  background: var(--color-ember);
+  color: var(--color-paper);
+}
+
+/* Hard offset drop-shadow — forge theme has no soft SaaS shadows */
+.shadow-hard {
+  box-shadow: 6px 6px 0 0 var(--color-ink);
+}
+
+.shadow-hard-sm {
+  box-shadow: 3px 3px 0 0 var(--color-ink);
+}
+
+.shadow-hard-ember {
+  box-shadow: 6px 6px 0 0 var(--color-ember);
+}
+
+/* Subtle heat-glow gradient anchored to bottom of viewport */
+.heat-glow {
+  pointer-events: none;
+  position: fixed;
+  inset: auto 0 0 0;
+  height: 45vh;
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 100%,
+    color-mix(in srgb, var(--color-ember) 22%, transparent),
+    transparent 70%
+  );
+  z-index: 0;
+}
+
+/* Visible keyboard focus, forge style */
+:focus-visible {
+  outline: 3px solid var(--color-ember);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
