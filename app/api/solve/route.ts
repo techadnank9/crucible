@@ -1,15 +1,18 @@
 import { NextResponse } from "next/server";
 import { crewHeaders, getCrewConfig, summariseUpstream } from "@/lib/crew";
+import { MAX_REPORT_CHARS } from "@/lib/fixtures";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   let question: unknown;
+  let reportText: unknown;
 
   try {
     const body = await req.json();
     question = body?.question;
+    reportText = body?.report_text;
   } catch {
     return NextResponse.json({ error: "Malformed request body." }, { status: 400 });
   }
@@ -21,6 +24,27 @@ export async function POST(req: Request) {
   if (question.length > 2000) {
     return NextResponse.json(
       { error: "Question is too long. Keep it under 2000 characters." },
+      { status: 400 }
+    );
+  }
+
+  // Report mode is optional. Anything absent, blank or non-string leaves the
+  // request on the original question-only path untouched.
+  let report: string | null = null;
+
+  if (typeof reportText === "string" && reportText.trim().length > 0) {
+    if (reportText.length > MAX_REPORT_CHARS) {
+      return NextResponse.json(
+        {
+          error: `The report is too long. Keep it under ${MAX_REPORT_CHARS.toLocaleString()} characters.`,
+        },
+        { status: 400 }
+      );
+    }
+    report = reportText.trim();
+  } else if (reportText !== undefined && reportText !== null && typeof reportText !== "string") {
+    return NextResponse.json(
+      { error: "report_text must be a string." },
       { status: 400 }
     );
   }
@@ -40,7 +64,14 @@ export async function POST(req: Request) {
     upstream = await fetch(`${config.url}/kickoff`, {
       method: "POST",
       headers: crewHeaders(config.token),
-      body: JSON.stringify({ inputs: { question: question.trim() } }),
+      // report_text is omitted entirely when absent, so a question-only
+      // kickoff is byte-identical to what the crew received before report
+      // mode existed.
+      body: JSON.stringify({
+        inputs: report
+          ? { question: question.trim(), report_text: report }
+          : { question: question.trim() },
+      }),
       cache: "no-store",
     });
   } catch {

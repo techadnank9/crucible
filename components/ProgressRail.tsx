@@ -1,10 +1,10 @@
 "use client";
 
-import { STEPS } from "@/lib/steps";
-
 type Props = {
   activeStep: number;
   elapsedMs: number;
+  /** Rail contents for this run — report mode prepends a reading step. */
+  steps: readonly string[];
 };
 
 function clock(ms: number): string {
@@ -14,7 +14,7 @@ function clock(ms: number): string {
   return `${m}:${s}`;
 }
 
-export default function ProgressRail({ activeStep, elapsedMs }: Props) {
+export default function ProgressRail({ activeStep, elapsedMs, steps }: Props) {
   return (
     <section className="rail reveal" aria-label="Run progress">
       <div className="masthead-note" style={{ marginBottom: 14 }}>
@@ -24,7 +24,7 @@ export default function ProgressRail({ activeStep, elapsedMs }: Props) {
       </div>
 
       <ol className="rail-list">
-        {STEPS.map((label, i) => {
+        {steps.map((label, i) => {
           const state =
             i < activeStep ? "is-done" : i === activeStep ? "is-active" : "";
           return (
@@ -42,8 +42,8 @@ export default function ProgressRail({ activeStep, elapsedMs }: Props) {
       </ol>
 
       <p className="visually-live" aria-live="polite" style={{ position: "absolute", left: "-9999px" }}>
-        Step {Math.min(activeStep + 1, STEPS.length)} of {STEPS.length}:{" "}
-        {STEPS[Math.min(activeStep, STEPS.length - 1)]}
+        Step {Math.min(activeStep + 1, steps.length)} of {steps.length}:{" "}
+        {steps[Math.min(activeStep, steps.length - 1)]}
       </p>
     </section>
   );

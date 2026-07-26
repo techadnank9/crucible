@@ -12,22 +12,35 @@ export default function Page() {
       </header>
 
       <section className="hero">
+        <p className="eyebrow">An adversarial second read — starting with oncology</p>
         <h1>
-          Any answer
+          When the answer
           <br />
-          worth keeping
+          is a diagnosis,
           <br />
-          is <span className="fire">tested by fire.</span>
+          it must be <span className="fire">tested by fire.</span>
         </h1>
         <p className="tagline">
-          Crucible <strong>builds its own expert team</strong>,{" "}
+          Crucible <strong>builds its own expert panel</strong>,{" "}
           <strong>attacks its own answer</strong>, and{" "}
           <strong>rebuilds it</strong> — then tells you how far to trust the
-          result.
+          result. Paste a report and it reads the findings before it argues.
         </p>
       </section>
 
       <Forge />
+
+      <section className="stakes">
+        <p className="eyebrow">Why this shape</p>
+        <p>
+          A confident wrong answer is the dangerous one. In diagnostics the
+          failure is rarely a missing fact — it is a conclusion that does not
+          follow from findings already written down in the same report. Nothing
+          in a single-model system is structurally required to object. In
+          Crucible the Attacker <strong>fails its task if it agrees</strong>.
+          Disagreement is guaranteed by construction, not requested politely.
+        </p>
+      </section>
 
       <section className="how">
         <p className="eyebrow">What happens in the sixty seconds</p>
@@ -36,16 +49,18 @@ export default function Page() {
             <span className="how-num">01 / Assemble</span>
             <h3>It picks its own specialists</h3>
             <p>
-              No fixed panel. The crew reads your question, decides which kinds
-              of expert it needs, and staffs the room before it writes a word.
+              No fixed panel. The crew reads the case, decides which kinds of
+              expert it needs — radiology, pathology, oncology, or none of the
+              above — and staffs the room before it writes a word.
             </p>
           </div>
           <div className="how-item">
             <span className="how-num">02 / Attack</span>
             <h3>A defender, an attacker, a skeptic</h3>
             <p>
-              The first draft gets torn at from three directions. A judge rules
-              on what survived and directs the rewrite that follows.
+              The first read gets torn at from three directions, each quoting
+              the findings back. A judge rules on what survived and directs the
+              rewrite that follows.
             </p>
           </div>
           <div className="how-item">
@@ -57,6 +72,17 @@ export default function Page() {
             </p>
           </div>
         </div>
+      </section>
+
+      <section className="disclaimer">
+        <p>
+          <strong>Research demonstration.</strong> Crucible is not a medical
+          device, is not clinically validated, and has no regulatory clearance.
+          It must not be used for diagnosis, treatment, or any patient-care
+          decision. Sample reports on this page are synthetic and contain no
+          patient data. The engine is general purpose — oncology is the first
+          domain it is aimed at, not a limit on what it answers.
+        </p>
       </section>
 
       <footer className="colophon">
